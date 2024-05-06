@@ -3,8 +3,10 @@ import './App.css';
 import { db } from './config/firebase'
 import {getDocs, collection} from 'firebase/firestore'
 import {useEffect, useState} from "react";
+import CustomerForm from "./components/CustomerForm/customerForm";
 
 function App() {
+  /*
   //Example for Firebase firestore
   const [movieList, setMovieList] = useState([])
   const moviesCollectionsRef = collection(db, "clients")
@@ -20,9 +22,10 @@ function App() {
       }
     }
     getClientsList()
-  }, []);
+  }, []);*/
   return (
     <div className="App">
+      <CustomerForm/>
     </div>
   );
 }

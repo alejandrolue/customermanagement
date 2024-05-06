@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import {Dropdown, MenuButton} from "@mui/base";
 import {Menu} from '@mui/base/Menu';
-import InputField from "../inputField/inputField";
+import InputField from "../InputField/inputField";
 import SwitchButton from "../switch/switch";
 import RadioButtons from "../radioButtons/radioButtons";
 
