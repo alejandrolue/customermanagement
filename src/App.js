@@ -6,6 +6,8 @@ import {useEffect, useState} from "react";
 import RadioButtons from "./components/radioButtons/radioButtons";
 import SwitchButton from "./components/switch/switch";
 import InputField from "./components/inputField/inputField";
+import FormBuilder from "./components/FormBuilder/formBuilder";
+import FormCard from "./components/FromCard/formCard";
 
 function App() {
     /*
@@ -30,6 +32,8 @@ function App() {
         <div className="App">
             <SwitchButton/>
             <InputField/>
+            <FormBuilder/>
+            <FormCard/>
         </div>
     );
 }

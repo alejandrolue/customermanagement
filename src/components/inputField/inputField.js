@@ -1,16 +1,18 @@
 import React, {useState} from "react";
 import {TextField} from "@mui/material";
 
-function InputField() {
+function InputField(props) {
     const [value, setValue] = useState("")
 
     const onValueChange = (e) => {
         setValue(e)
         console.log(value)
     }
+
+
     return (
         <div className="InputField">
-            <TextField onChange={(e) => onValueChange(e.target.value)}/>
+            <TextField onChange={(e) => onValueChange(e.target.value)} label={props.label} variant={props.variant}/>
         </div>
     )
 }
