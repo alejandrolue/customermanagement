@@ -1,15 +1,14 @@
 import React, {useState} from "react"
 import {TextField} from "@mui/material";
 
-export default function InputField({label, variant, sendValue}) {
-    const [value, setValue] = useState("")
+export default function InputField({value, label, variant, onChildValueChange}) {
     const onHandleChange = (e) => {
-        setValue(value)
-        sendValue(value)
+        const newValue = e.target.value
+        onChildValueChange({name: value, value: newValue})
     }
     return (
         <div className="inputField">
-            <TextField label={label} variant={variant} onChange={(e) => onHandleChange(e.target.value)}/>
+            <TextField label={label} variant={variant} onChange={onHandleChange}/>
         </div>
     )
 }
