@@ -23,9 +23,7 @@ import RadioGroup from '@mui/joy/RadioGroup';
 import {collection, addDoc} from "firebase/firestore";
 import {db} from "../../config/firebase";
 
-
 export default function CustomerForm() {
-    const [switchValue, setSwitchValue] = useState()
     const [recommendedBy, setRecommendedBy] = useState(false)
     const clientRef = collection(db, "clients")
     const [formData, setFormData] = useState({
