@@ -1,0 +1,11 @@
+.treatment-table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.treatment-table-head, .treatment-table-row {
+    border: 1px solid #dddddd;
+    text-align: center;
+    padding: 8px;
+}

@@ -1,12 +1,40 @@
-import React from "react"
+import React, {useCallback, useState} from "react"
 import {useLocation} from "react-router-dom";
-import {Card, CardContent, Typography} from "@mui/material";
+import {Button, Card, CardContent, Typography} from "@mui/material";
 import SessionTable from "../../components/sessionTable/sessionTable";
+import TreatmentTable from "../../components/treatment/treatmentTable/treatmentTable";
+import TreatmentHandler from "../../components/treatment/treatmentHandler/treatmentHandler";
+import "./customerPage.css"
+import Popup from "reactjs-popup";
+import TreatmentHandlerPopUp from "../../components/treatment/treatmentHandlerPopUp/treatmentHandlerPopUp";
+import {deleteDoc, doc} from "firebase/firestore";
+import {db} from "../../config/firebase";
 
 export default function CustomerPage() {
     const location = useLocation()
     const client = location.state
-    console.log(client.id)
+    const clientId = client.id
+    const [change, setChange] = useState(false)
+
+    const handleDeleteDocument = async () => {
+        try {
+            // Delete the document
+            await deleteDoc(doc(db, "clients", clientId));
+
+            console.log("Document deleted successfully");
+        } catch (err) {
+            console.error("Error deleting document:", err);
+        }
+    };
+
+    const caller = () => {
+        onStateChange()
+    }
+
+    const onStateChange = useCallback(() => {
+        setChange(open => !open);
+    }, [change]);
+
     return (
         <div className="customerPage">
             <div style={{width: 700}}>
@@ -45,9 +73,14 @@ export default function CustomerPage() {
                     </CardContent>
                 </Card>
             </div>
-            <div style={{maxWidth: 1000}}>
-                <SessionTable client={client}/>
+
+            <div>
+                <TreatmentHandlerPopUp id={clientId} buttonText="ADD NEW TREATMENT" onStateChange={caller}/>
             </div>
+            <div>
+                <TreatmentTable id={clientId} onStateChange={caller}/>
+            </div>
+            <Button onClick={handleDeleteDocument}>DELETE CLIENT</Button>
         </div>
     )
 }

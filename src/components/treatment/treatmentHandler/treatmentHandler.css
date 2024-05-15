@@ -1,0 +1,27 @@
+.treatment-handler-body {
+    width: 120%;
+    background: white;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    border-radius: 2%;
+    display: flex;
+    justify-content: center;
+}
+
+.treatment-handler-head {
+    display: flex;
+    justify-content: center;
+}
+
+.treatment-handler-fields {
+    display: flex;
+    justify-content: center;
+    gap: 1%;
+    margin-bottom: 1%;
+}
+.treatment-handler-picker {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2%;
+}

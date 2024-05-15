@@ -8,22 +8,16 @@ import {
     Switch,
     Typography
 } from "@mui/material";
-import {DemoContainer} from '@mui/x-date-pickers/internals/demo';
-import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
-import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
-import {DatePicker} from '@mui/x-date-pickers/DatePicker';
-import InputField from "../InputField/inputField";
-import SwitchButton from "../SwitchButton/SwitchButton";
-import {getValue} from "@testing-library/user-event/dist/utils";
-import RadioButton from "../RadioButton/RadioButton";
 import Radio from '@mui/joy/Radio';
 import FormControl from '@mui/joy/FormControl';
-import FormLabel from '@mui/joy/FormLabel';
 import RadioGroup from '@mui/joy/RadioGroup';
 import {collection, addDoc} from "firebase/firestore";
-import {db} from "../../config/firebase";
+import InputField from "../../InputField/inputField";
+import SwitchButton from "../../SwitchButton/SwitchButton";
+import {db} from "../../../config/firebase";
+import CustomDateField from "../../customComponent/customDateField/customDateField";
 
-export default function CustomerForm() {
+export default function CustomerForm({closeModal}) {
     const [recommendedBy, setRecommendedBy] = useState(false)
     const clientRef = collection(db, "clients")
     const [formData, setFormData] = useState({
@@ -52,24 +46,23 @@ export default function CustomerForm() {
     };
 
     const handleDateInput = (e) => {
-        const date = dayjs(e).format('DD/MM/YYYY')
+
         setFormData({
             ...formData,
-            birthDate: date
+            birthDate: e.value
         });
     }
 
     const handleRadioInput = (e) => {
-        if (recommendedBy) {
-            handleRecommendedBy()
-        }
         if (e.name === "recommended") {
+            setRecommendedBy(true)
             setFormData({
                 ...formData,
                 recommendation: e.value
             });
 
         } else {
+            setRecommendedBy(false)
             setFormData({
                 ...formData,
                 recommendation: e
@@ -85,12 +78,13 @@ export default function CustomerForm() {
     }
 
     const handleRecommendedBy = () => {
-        setRecommendedBy(!recommendedBy)
+        setRecommendedBy(true)
     }
 
     const createClient = async () => {
         try {
             await addDoc(clientRef, formData)
+            closeModal()
         } catch (err) {
             console.log(err)
         }
@@ -106,21 +100,20 @@ export default function CustomerForm() {
                         Enter the customers information
                     </Typography>
                     <CardActions>
-                        <InputField label="Firstname" variant="standard" value="firstName" onChildValueChange={handleInputChange}/>
-                        <InputField label="Lastname" variant="standard" value="lastName" onChildValueChange={handleInputChange}/>
-                        <InputField label="Street" value="street" variant="standard" onChildValueChange={handleInputChange}/>
+                        <InputField label="Firstname" variant="standard" value="firstName"
+                                    onChildValueChange={handleInputChange}/>
+                        <InputField label="Lastname" variant="standard" value="lastName"
+                                    onChildValueChange={handleInputChange}/>
+                        <InputField label="Street" value="street" variant="standard"
+                                    onChildValueChange={handleInputChange}/>
                     </CardActions>
                     <CardActions>
-                        <InputField label="Post code" variant="standard" value="postCode" onChildValueChange={handleInputChange}/>
-                        <InputField label="Phone number" variant="standard" value="phoneNumber" onChildValueChange={handleInputChange}/>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DemoContainer components={['DatePicker']}>
-                                <DatePicker
-                                    label="Birthdate"
-                                    onChange={(value) => handleDateInput(value)}
-                                />
-                            </DemoContainer>
-                        </LocalizationProvider>
+                        <InputField label="Post code" variant="standard" value="postCode"
+                                    onChildValueChange={handleInputChange}/>
+                        <InputField label="Phone number" variant="standard" value="phoneNumber"
+                                    onChildValueChange={handleInputChange}/>
+
+                        <CustomDateField value="date" onChildValueChange={handleDateInput}/>
                     </CardActions>
                     <CardActions>
                         <Typography variant="body2" color="text.secondary">
@@ -160,17 +153,20 @@ export default function CustomerForm() {
                     <FormControl>
                         <RadioGroup>
                             <Radio value="Inserat" label="Inserat" onClick={() => handleRadioInput("Inserat")}/>
-                            <Radio value="Telefonbuch" label="Telefonbuch" onClick={() => handleRadioInput("Telefonbuch")}/>
+                            <Radio value="Telefonbuch" label="Telefonbuch"
+                                   onClick={() => handleRadioInput("Telefonbuch")}/>
                             <Radio value="Empfelung durch" label="Empfelung durch" onClick={handleRecommendedBy}/>
                         </RadioGroup>
+                        {recommendedBy === true &&
+                            <InputField label="Recommended by" variant="standard" value="recommended"
+                                        onChildValueChange={handleRadioInput}/>
+                        }
                     </FormControl>
-                    {recommendedBy === true &&
-                        <InputField label="Recommended by" variant="standard" value="recommended" onChildValueChange={handleRadioInput}/>
-                    }
+
                 </CardContent>
                 <CardActions>
                     <Button size="small" color="primary" onClick={createClient}>
-                        Share
+                        CREATE
                     </Button>
                 </CardActions>
             </Card>

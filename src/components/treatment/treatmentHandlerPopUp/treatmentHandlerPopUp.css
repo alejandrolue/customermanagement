@@ -1,0 +1,8 @@
+#popUp-root {
+    background: black;
+}
+
+#popup-root .popup-overlay {
+    background: rgba(0, 0, 0, 0.3);
+}
+
