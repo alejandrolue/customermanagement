@@ -1,0 +1,26 @@
+.clientView-body {
+    background: white;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    border-radius: 2%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 50%;
+
+}
+
+.clientView-container {
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    padding-top: 20px;
+}
+
+.clientView-clientTreatment {
+    display: flex;
+    justify-content: center;
+}
+
+.clientView-clientInfo {
+    display: flex;
+    justify-content: center;
+}

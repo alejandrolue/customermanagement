@@ -1,36 +1,41 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import "./treatmentHandler.css"
 import CustomInputField from "../../customComponent/customInputField/customInputField";
 import CustomDateField from "../../customComponent/customDateField/customDateField";
-import {addDoc, collection, doc, updateDoc, deleteDoc, setDoc} from "firebase/firestore";
+import {addDoc, collection, deleteDoc, doc, setDoc} from "firebase/firestore";
 import {db} from "../../../config/firebase";
 import {Button} from "@mui/material";
 
-export default function TreatmentHandler({id, data, closeModal}) {
-    let clientId = id
-    let treatmentRef = collection(db, "clients/" + clientId + "/treatment")
+export default function TreatmentHandler({id, data, closeModal, treatmentTable, treatmentId, tableRow}) {
+    const clientDocRef = doc(db, "clients", id)
+    const treatmentTableCollectionRef = collection(clientDocRef, "treatmentTable")
+    const tableDocRef = doc(treatmentTableCollectionRef, treatmentTable)
+    const treatmentsCollectionRef = collection(tableDocRef, "treatments");
+
+
     const [edit, setEdit] = useState(false)
     const [formData, setFormData] = useState({
         date: "",
         weight: "",
         treatment: "",
+        treatmentPrice: "",
         boughtProduct: "",
+        combinedProductPrice: "",
         payedAt: ""
     })
+
     const submitChanges = async () => {
         try {
-            await addDoc(treatmentRef, formData)
+            await addDoc(treatmentsCollectionRef, formData)
             closeModal();
         } catch (err) {
             console.log(err)
         }
-
     }
 
     const handleUpdateChange = async () => {
         try {
-            const treatmentUpdateRef = doc(db, "clients", clientId, "treatment", data.id);
-            // Update the document with the new data (formData)
+            const treatmentUpdateRef = doc(db, "clients", id, "treatmentTable", treatmentTable, "treatments", tableRow);
             await setDoc(treatmentUpdateRef, formData);
         } catch (err) {
             console.error("Error updating document:", err);
@@ -40,14 +45,13 @@ export default function TreatmentHandler({id, data, closeModal}) {
 
     const handleDeleteDocument = async () => {
         try {
-            // Delete the document
-            await deleteDoc(doc(db, "clients", clientId, "treatment", data.id));
-
+            await deleteDoc(doc(db, "clients", id, "treatmentTable", treatmentTable, "treatments", tableRow));
         } catch (err) {
             console.error("Error deleting document:", err);
         }
         closeModal();
     };
+
 
     useEffect(() => {
         if (data ?? false) {
@@ -77,9 +81,18 @@ export default function TreatmentHandler({id, data, closeModal}) {
                             <CustomInputField placeholder="Treatment" value="treatment"
                                               onChildValueChange={handleInputChange} type="text"
                                               inputValue={data && data.treatment ? data.treatment : undefined}/>
+                            <CustomInputField placeholder="Treatment Price" value="treatmentPrice"
+                                              onChildValueChange={handleInputChange} type="number"
+                                              inputValue={data && data.treatmentPrice ? data.treatmentPrice : undefined}/>
+
+                        </div>
+                        <div className="treatment-handler-fields">
                             <CustomInputField placeholder="Bought Product" value="boughtProduct"
                                               onChildValueChange={handleInputChange} type="text"
                                               inputValue={data && data.boughtProduct ? data.boughtProduct : undefined}/>
+                            <CustomInputField placeholder="Combined Product Price" value="combinedProductPrice"
+                                              onChildValueChange={handleInputChange} type="number"
+                                              inputValue={data && data.combinedProductPrice ? data.combinedProductPrice : undefined}/>
                         </div>
                         <div className="treatment-handler-picker">
                             <div>

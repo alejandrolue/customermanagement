@@ -1,12 +1,13 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Popup from 'reactjs-popup';
 import "./treatmentHandlerPopUp.css"
 import TreatmentHandler from "../treatmentHandler/treatmentHandler";
 import "../../treatment/treatmentHandlerPopUp/treatmentHandlerPopUp.css"
 import {Button} from "@mui/material";
+import {collection, getDocs} from "firebase/firestore";
+import {db} from "../../../config/firebase";
 
-export default function TreatmentHandlerPopUp({data, id, buttonText, onStateChange}) {
-    let tableData = data
+export default function TreatmentHandlerPopUp({data, id, buttonText, onStateChange, treatmentTable, tableRow}) {
     const [open, setOpen] = useState(false);
 
     const closeModal = () => {
@@ -24,7 +25,7 @@ export default function TreatmentHandlerPopUp({data, id, buttonText, onStateChan
                 closeOnDocumentClick
                 onClose={closeModal}>
 
-                <TreatmentHandler id={id} data={tableData} closeModal={closeModal}/>
+                <TreatmentHandler id={id} closeModal={closeModal} treatmentTable={treatmentTable} tableRow={tableRow} data={data}/>
             </Popup>
         </div>
     )

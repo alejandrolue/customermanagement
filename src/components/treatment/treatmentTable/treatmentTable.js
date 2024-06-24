@@ -1,23 +1,25 @@
 import React, {useEffect, useState} from "react"
 import "./treatmentTable.css"
-import {collection, getDocs} from "firebase/firestore";
+import {collection, doc, getDocs, getColl} from "firebase/firestore";
 import {db} from "../../../config/firebase";
 import {Button} from "@mui/material";
 import TreatmentHandlerPopUp from "../treatmentHandlerPopUp/treatmentHandlerPopUp";
 
-export default function TreatmentTable({id, onStateChange}) {
-    const treatmentCollectionsRef = collection(db, "clients/" + id + "/treatment")
+export default function TreatmentTable({id, onStateChange, tableId}) {
+    const treatmentDocRef = collection(db, "clients",id ,"treatmentTable", tableId, "treatments")
     const [treatmentList, setTreatmentList] = useState([])
 
     useEffect(() => {
         const getTreatmentList = async () => {
             try {
-                const data = await getDocs(treatmentCollectionsRef);
+                const data = await getDocs(treatmentDocRef);
                 const list = data.docs.map((doc) => ({
                     ...doc.data(),
                     id: doc.id
                 }))
-                setTreatmentList(list)
+                // Sort the list by date
+                list.sort((a, b) => new Date(a.date) - new Date(b.date));
+                setTreatmentList(list);
             } catch (err) {
                 console.log(err)
             }
@@ -54,7 +56,7 @@ export default function TreatmentTable({id, onStateChange}) {
                         <td className="treatment-table-row">{data.treatment}</td>
                         <td className="treatment-table-row">{data.boughtProduct}</td>
                         <td className="treatment-table-row">{data.payedAt}</td>
-                        <td className="treatment-table-row"><TreatmentHandlerPopUp data={data} id={id} buttonText="CHANGE" onStateChange={closeModal}/></td>
+                        <td className="treatment-table-row"><TreatmentHandlerPopUp treatmentTable={tableId} id={id} data={data} buttonText="CHANGE" onStateChange={closeModal} tableRow={data.id}/></td>
                     </tr>
                 ))}
                 </tbody>

@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 export default function CustomerCard({client}) {
     const nav = useNavigate()
     const onHandleClick = () => {
-        console.log(client)
         nav("/customer", {state: client})
     }
     return (

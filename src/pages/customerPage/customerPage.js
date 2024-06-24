@@ -1,39 +1,52 @@
-import React, {useCallback, useState} from "react"
-import {useLocation} from "react-router-dom";
+import React, {useCallback, useEffect, useState} from "react"
+import {useLocation, useNavigate} from "react-router-dom";
 import {Button, Card, CardContent, Typography} from "@mui/material";
-import SessionTable from "../../components/sessionTable/sessionTable";
 import TreatmentTable from "../../components/treatment/treatmentTable/treatmentTable";
-import TreatmentHandler from "../../components/treatment/treatmentHandler/treatmentHandler";
 import "./customerPage.css"
-import Popup from "reactjs-popup";
 import TreatmentHandlerPopUp from "../../components/treatment/treatmentHandlerPopUp/treatmentHandlerPopUp";
-import {deleteDoc, doc} from "firebase/firestore";
+import {collection, deleteDoc, doc, getDocs} from "firebase/firestore";
 import {db} from "../../config/firebase";
+import CustomerFormPopUp from "../../components/customerComponents/customerFromPopUp/customerFormPopUp";
+import CreateTreatmentTablePopUp from "../../components/treatment/createTreatmentTablePopUp/createTreatmentTablePopUp";
+import WeightGraph from "../../components/customerComponents/clientCharts/weightGraph/weightGraph";
 
 export default function CustomerPage() {
     const location = useLocation()
     const client = location.state
     const clientId = client.id
     const [change, setChange] = useState(false)
+    const nav = useNavigate()
+    const [treatmentTableList, setTreatmentTableList] = useState([])
+    const treatmentTableListRef = collection(db, "clients", clientId, "treatmentTable")
 
-    const handleDeleteDocument = async () => {
-        try {
-            // Delete the document
-            await deleteDoc(doc(db, "clients", clientId));
-
-            console.log("Document deleted successfully");
-        } catch (err) {
-            console.error("Error deleting document:", err);
+    useEffect(() => {
+        const getTreatmentTableList = async () => {
+            try {
+                const data = await getDocs(treatmentTableListRef);
+                const list = data.docs.map((doc) => ({
+                    ...doc.data(),
+                    id: doc.id
+                }))
+                setTreatmentTableList(list)
+            } catch (err) {
+                console.log(err)
+            }
         }
-    };
+        getTreatmentTableList()
+    }, [change]);
 
     const caller = () => {
         onStateChange()
+        console.log("called")
     }
 
     const onStateChange = useCallback(() => {
         setChange(open => !open);
     }, [change]);
+
+    const onHandleClick = () => {
+        nav("/client", {state: client})
+    }
 
     return (
         <div className="customerPage">
@@ -53,10 +66,10 @@ export default function CustomerPage() {
                             Recommended by: {client.recommendation}
                         </Typography>
                         <Typography gutterBottom variant="h5" component="div">
-                            Agne Pectoris: {client.agnePectoris ? ("Yes") : ("No")}
+                            Angina Pectoris: {client.agnePectoris ? ("Yes") : ("No")}
                         </Typography>
                         <Typography gutterBottom variant="h5" component="div">
-                            Lungenmobile: {client.lungenmobile ? ("Yes") : ("No")}
+                            Lungenembolie: {client.lungenmobile ? ("Yes") : ("No")}
                         </Typography>
                         <Typography gutterBottom variant="h5" component="div">
                             Medicament: {client.medication ? ("Yes") : ("No")}
@@ -70,17 +83,27 @@ export default function CustomerPage() {
                         <Typography gutterBottom variant="h5" component="div">
                             Offenes bein: {client.openLeg ? ("Yes") : ("No")}
                         </Typography>
+                        <Button onClick={onHandleClick}>CLIENT VIEW</Button>
                     </CardContent>
                 </Card>
             </div>
 
             <div>
-                <TreatmentHandlerPopUp id={clientId} buttonText="ADD NEW TREATMENT" onStateChange={caller}/>
+                <h1>Treatments</h1>
+                <CreateTreatmentTablePopUp id={clientId} onStateChange={caller} buttonText="CREATE NEW TABLE"/>
             </div>
             <div>
-                <TreatmentTable id={clientId} onStateChange={caller}/>
+                {treatmentTableList.map((data) => (
+                    <>
+                        <h4>ABO: {data.aboName} TYPE: {data.type} SESSIONS: {data.sessions}</h4>
+                        <TreatmentHandlerPopUp id={clientId} treatmentTable={data.id} buttonText="ADD NEW TREATMENT"
+                                               onStateChange={caller}/>
+                        <TreatmentTable id={clientId} onStateChange={caller} tableId={data.id}/>
+                    </>
+                ))}
+
             </div>
-            <Button onClick={handleDeleteDocument}>DELETE CLIENT</Button>
+            <CustomerFormPopUp value="EDIT CLIENT" data={client} id={clientId} onStateChange={caller}/>
         </div>
     )
 }
